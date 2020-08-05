@@ -24,14 +24,14 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
-from qgis.core import QgsMapLayerProxyModel, QgsFeature, QgsVectorLayer, QgsPoint, QgsGeometry, QgsMapLayerRegistry
+from qgis.core import QgsMapLayerProxyModel, QgsFeature, QgsVectorLayer, QgsPoint, QgsGeometry
 # Initialize Qt resources from file resources.py
 from .resources import *
 
 # Import the code for the DockWidget
 from .localcoordinates_dockwidget import localCoordinateDigitizerDockWidget
 import os.path
-
+import math
 
 class localCoordinateDigitizer:
     """QGIS Plugin Implementation."""
@@ -225,9 +225,10 @@ class localCoordinateDigitizer:
                 self.dockwidget = localCoordinateDigitizerDockWidget()
                 self.dockwidget.mlReference.setFilters(QgsMapLayerProxyModel.LineLayer)
                 self.dockwidget.mlWork.setFilters(QgsMapLayerProxyModel.LineLayer)
-                self.orgigin=None #QgsReferencedPointXY()
+                self.origin=None #QgsReferencedPointXY()
+                self.angle=None 
                 self.dockwidget.pbAddLine.clicked.connect(self.addline)
-
+                self.dockwidget.mlReference.currentIndexChanged['QString'].connect(self.setcoordinatesystem)
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
 
@@ -236,20 +237,46 @@ class localCoordinateDigitizer:
             self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
     
+    
+    def reproject(self,x,y):
+      if x !=0:
+        v1=math.atan(y/x)
+      else:
+        v1=math.pi/2
+      print(v1/3.1415*180)
+      l=math.sqrt(x**2+y**2)
+      v2=v1-self.angle
+      print(v2/3.1415*180)
+      y=math.sin(v2)*l
+      x=math.cos(v2)*l
+      print(x+self.origin.x(),y+self.origin.y())
+      
+    
     def addline(self):
-      line_layer = self.dockwidget.mlReference.currentLayer()
-      feat = QgsFeature()
-
-      point_layer = QgsVectorLayer("Point?crs=epsg:4326", "point_layer", "memory")
-      pr = point_layer.dataProvider()
-
-      for feature in line_layer.getFeatures():
+      if self.angle==None:
+        print("Set koordinatsystem!")
+        return(None)
+      dw=self.dockwidget
+      x0=float(dw.lefromX.text())
+      x1=float(dw.letoX.text())
+      y0=float(dw.lefromY.text())
+      y1=float(dw.letoY.text())
+      print(x0,x1,y0,y1)
+      xlen=abs(x0)
+      ylen=abs(y0)
+      p0=self.reproject(x0,y0)
+      
+    
+    def setcoordinatesystem(self):
+      self.dockwidget.pbAddLine.setEnabled(True)
+      axislayer = self.dockwidget.mlReference.currentLayer()
+      for feature in axislayer.getFeatures():
           geom = feature.geometry().asPolyline()
-          start_point = QgsPoint(geom[0])
-          end_point = QgsPoint(geom[-1])
-          feat.setGeometry(QgsGeometry.fromPoint(start_point))
-          pr.addFeatures([feat])
-          feat.setGeometry(QgsGeometry.fromPoint(end_point))
-          pr.addFeatures([feat])
+          print("origin:    {},{}".format(geom[0].x(),geom[0].y()))
+          print("lastpoint: {},{}".format(geom[1].x(),geom[1].y()))
+          self.origin=geom[0]
+          self.angle=math.atan(abs(geom[1].x()-geom[0].x())/abs(geom[1].y()-geom[0].y()))
+          print(self.angle/3.1415*180)
+          
 
-      QgsMapLayerRegistry.instance().addMapLayer(point_layer)
+
