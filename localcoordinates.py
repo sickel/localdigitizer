@@ -24,6 +24,7 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
+from qgis.core import QgsMapLayerProxyModel, QgsFeature, QgsVectorLayer, QgsPoint, QgsGeometry, QgsMapLayerRegistry
 # Initialize Qt resources from file resources.py
 from .resources import *
 
@@ -222,6 +223,10 @@ class localCoordinateDigitizer:
             if self.dockwidget == None:
                 # Create the dockwidget (after translation) and keep reference
                 self.dockwidget = localCoordinateDigitizerDockWidget()
+                self.dockwidget.mlReference.setFilters(QgsMapLayerProxyModel.LineLayer)
+                self.dockwidget.mlWork.setFilters(QgsMapLayerProxyModel.LineLayer)
+                self.orgigin=None #QgsReferencedPointXY()
+                self.dockwidget.pbAddLine.clicked.connect(self.addline)
 
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
@@ -230,3 +235,21 @@ class localCoordinateDigitizer:
             # TODO: fix to allow choice of dock location
             self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
+    
+    def addline(self):
+      line_layer = self.dockwidget.mlReference.currentLayer()
+      feat = QgsFeature()
+
+      point_layer = QgsVectorLayer("Point?crs=epsg:4326", "point_layer", "memory")
+      pr = point_layer.dataProvider()
+
+      for feature in line_layer.getFeatures():
+          geom = feature.geometry().asPolyline()
+          start_point = QgsPoint(geom[0])
+          end_point = QgsPoint(geom[-1])
+          feat.setGeometry(QgsGeometry.fromPoint(start_point))
+          pr.addFeatures([feat])
+          feat.setGeometry(QgsGeometry.fromPoint(end_point))
+          pr.addFeatures([feat])
+
+      QgsMapLayerRegistry.instance().addMapLayer(point_layer)

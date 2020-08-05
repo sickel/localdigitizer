@@ -6,27 +6,145 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>232</width>
-    <height>141</height>
+    <width>336</width>
+    <height>285</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Digitize local coordinates</string>
+   <string>Digitize &amp;local coordinates</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Work layer</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Replace this QLabel
-with the desired
-plugin content.</string>
+       <string>Reference layer</string>
       </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QgsMapLayerComboBox" name="mlReference">
+      <property name="showCrs">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QgsMapLayerComboBox" name="mlWork">
+      <property name="showCrs">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>58</width>
+         <height>18</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>From</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>58</width>
+         <height>18</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>To</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lefromX">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>10</y>
+         <width>81</width>
+         <height>32</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lefromY">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>10</y>
+         <width>81</width>
+         <height>32</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="letoX">
+       <property name="geometry">
+        <rect>
+         <x>92</x>
+         <y>50</y>
+         <width>81</width>
+         <height>32</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="letoY">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>50</y>
+         <width>81</width>
+         <height>32</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pbAddLine">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>100</y>
+         <width>88</width>
+         <height>34</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Add line</string>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsMapLayerComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgsmaplayercombobox.h</header>
+  </customwidget>
+ </customwidgets>
+ <includes>
+  <include location="local">qgis.gui</include>
+ </includes>
  <resources/>
  <connections/>
 </ui>
