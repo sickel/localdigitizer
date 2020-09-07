@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>336</width>
-    <height>285</height>
+    <width>338</width>
+    <height>229</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,26 +55,26 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>20</y>
-         <width>58</width>
+         <y>10</y>
+         <width>71</width>
          <height>18</height>
         </rect>
        </property>
        <property name="text">
-        <string>From</string>
+        <string>From (X,Y)</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_4">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>60</y>
+         <y>40</y>
          <width>58</width>
          <height>18</height>
         </rect>
        </property>
        <property name="text">
-        <string>To</string>
+        <string>To (X,Y)</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lefromX">
@@ -82,38 +82,38 @@
         <rect>
          <x>90</x>
          <y>10</y>
-         <width>81</width>
-         <height>32</height>
+         <width>51</width>
+         <height>21</height>
         </rect>
        </property>
       </widget>
       <widget class="QLineEdit" name="lefromY">
        <property name="geometry">
         <rect>
-         <x>200</x>
+         <x>150</x>
          <y>10</y>
-         <width>81</width>
-         <height>32</height>
+         <width>51</width>
+         <height>21</height>
         </rect>
        </property>
       </widget>
       <widget class="QLineEdit" name="letoX">
        <property name="geometry">
         <rect>
-         <x>92</x>
-         <y>50</y>
-         <width>81</width>
-         <height>32</height>
+         <x>90</x>
+         <y>40</y>
+         <width>51</width>
+         <height>21</height>
         </rect>
        </property>
       </widget>
       <widget class="QLineEdit" name="letoY">
        <property name="geometry">
         <rect>
-         <x>200</x>
-         <y>50</y>
-         <width>81</width>
-         <height>32</height>
+         <x>150</x>
+         <y>40</y>
+         <width>51</width>
+         <height>21</height>
         </rect>
        </property>
       </widget>
@@ -123,14 +123,66 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>200</x>
-         <y>100</y>
-         <width>88</width>
-         <height>34</height>
+         <x>230</x>
+         <y>10</y>
+         <width>81</width>
+         <height>21</height>
         </rect>
        </property>
        <property name="text">
         <string>Add line</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>70</y>
+         <width>81</width>
+         <height>18</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>To (ang,len)</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="leangle">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>70</y>
+         <width>51</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string extracomment="Angle from Y axis - used when to XY is blank"/>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lelength">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>70</y>
+         <width>51</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string extracomment="Length"/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pbSwap">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>40</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Swap</string>
        </property>
       </widget>
      </widget>

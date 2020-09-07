@@ -27,6 +27,7 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.core import QgsMapLayerProxyModel, QgsFeature, QgsVectorLayer, QgsPoint, QgsGeometry, QgsPointXY
 # Initialize Qt resources from file resources.py
 from .resources import *
+from qgis.core import Qgis
 
 # Import the code for the DockWidget
 from .localcoordinates_dockwidget import localCoordinateDigitizerDockWidget
@@ -229,6 +230,8 @@ class localCoordinateDigitizer:
                 self.origin=None #QgsReferencedPointXY()
                 self.angle=None 
                 self.dockwidget.pbAddLine.clicked.connect(self.addline)
+                self.dockwidget.pbSwap.clicked.connect(self.swapends)
+                
                 self.dockwidget.mlReference.currentIndexChanged['QString'].connect(self.setcoordinatesystem)
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
@@ -238,12 +241,25 @@ class localCoordinateDigitizer:
             self.dockwidget.show()
     
     
+    def swapends(self):
+      dw=self.dockwidget
+      oldfromx=dw.lefromX.text()
+      oldfromy=dw.lefromY.text()
+      dw.lefromX.setText(dw.letoX.text())
+      dw.lefromY.setText(dw.letoY.text())
+      dw.letoX.setText(oldfromx)
+      dw.letoY.setText(oldfromy)
+    
     def reproject(self,x,y):
       # Projects the local coordinate into map coordinates
       if x !=0:
         v1=math.atan(y/x)
       else:
         v1=math.pi/2
+      print(v1)
+      if y < 0 and x<=0:
+        v1=v1+math.pi
+      print(v1)
       l=math.sqrt(x**2+y**2)
       v2=v1-self.angle
       y=math.sin(v2)*l
@@ -256,40 +272,67 @@ class localCoordinateDigitizer:
       if self.angle==None:
         # This should not happen, but put a warning anyhow
         # TODO: Use a proper type of warning
-        print("Set koordinatsystem!")
+        message="Reference layer not selected"
+        level=Qgis.Warning
+        self.iface.messageBar().pushMessage("Local coordinates", message, level=level)
         return(None)
       dw=self.dockwidget
       # TODO: Handle missing or invalid values
-      x0=float(dw.lefromX.text())
-      x1=float(dw.letoX.text())
-      y0=float(dw.lefromY.text())
-      y1=float(dw.letoY.text())
-      p0=self.reproject(x0,y0)
-      p1=self.reproject(x1,y1)
-      line = QgsGeometry.fromPolyline([p0,p1])  
-      worklayer=dw.mlWork.currentLayer()
-      pr=worklayer.dataProvider()
-      seg = QgsFeature()
-      # add the geometry to the feature, 
-      seg.setGeometry(line)
-      # add the geometry to the layer
-      pr.addFeatures( [ seg ] )
-      # update extent of the layer (not necessary)
-      worklayer.updateExtents()
-      # Reload the layer to show the new line
-      worklayer.reload()
+      toxy=dw.letoX.text()!='' and dw.letoY.text() != ''
+      try:
+        x0=float(dw.lefromX.text())
+        y0=float(dw.lefromY.text())
+        print(x0,y0)
+        p0=self.reproject(x0,y0)
+        if toxy:
+          x1=float(dw.letoX.text())
+          y1=float(dw.letoY.text())
+        else:
+          ang=float(dw.leangle.text())/180*math.pi
+          length=float(dw.lelength.text())
+          x1=x0+math.sin(ang)*length
+          y1=y0+math.cos(ang)*length
+          dw.letoX.setText(str(x1))
+          dw.letoY.setText(str(y1))
+        
+        print(x1,y1)
+        p1=self.reproject(x1,y1)
+        line = QgsGeometry.fromPolyline([p0,p1])  
+        worklayer=dw.mlWork.currentLayer()
+        pr=worklayer.dataProvider()
+        seg = QgsFeature()
+        # add the geometry to the feature, 
+        seg.setGeometry(line)
+        # add the geometry to the layer
+        pr.addFeatures( [ seg ] )
+        # update extent of the layer (not necessary)
+        worklayer.updateExtents()
+        # Reload the layer to show the new line
+        worklayer.reload()
+      except Exception as e:
+        message="Could not add line, check number formats"
+        level=Qgis.Warning
+        print(e)
+        self.iface.messageBar().pushMessage("Local coordinates", message, level=level)
 
     
     def setcoordinatesystem(self):
       # TODO: Check if there is at least one line in the layer
       self.dockwidget.pbAddLine.setEnabled(True)
       axislayer = self.dockwidget.mlReference.currentLayer()
-      # Using the last feature as the axis
-      # TODO: Use the first feature
+      # TODO: Use the first feature in a less kludgy way...
+      feat = QgsFeature()
+      geom=None
       for feature in axislayer.getFeatures():
+        if geom==None:
           geom = feature.geometry().asPolyline()
+          print("origin:    {},{}".format(geom[0].x(),geom[0].y()))
+          print("lastpoint: {},{}".format(geom[1].x(),geom[1].y()))
           self.origin=geom[0]
-          self.angle=math.atan(abs(geom[1].y()-geom[0].y())/abs(geom[1].x()-geom[0].x()))
+      # feature=axislayer.nextFeature(feat)
+      #geom = feature.geometry().asPolyline()
+      self.origin=geom[0]
+      self.angle=math.atan(abs(geom[1].y()-geom[0].y())/abs(geom[1].x()-geom[0].x()))
           
 
 

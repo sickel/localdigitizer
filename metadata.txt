@@ -5,12 +5,13 @@
 [general]
 name=Digitize local coordinates
 qgisMinimumVersion=3.0
-description=Digitizes in distances from a local reference point
-version=0.1
+description=Digitizes in distances from a local coordinate system
+version=0.3
 author=Morten Sickel
 email=morten@sickel.net
 
-about=Input coordinates relative to a local point. E.g. when planning modifications of buildings
+about=Input coordinates relative to a local coordinate system. E.g. when planning modifications of buildings. Make one line cover with the first line defining the x-axis of the local system. The starting point of the first line will be the origin, the difference between the start and the end of the first line defines the direction of the coordinate system. The units are as defined in the CRS of the layer. The work layer should be in the same CRS as the reference layer. The libes in the work layer can be defined either as start and end point, or as a starting point and the angle (as degrees from the y-axis) and the length. If to x and/or to y is left blank, angle and length is used. Type in the definition a line and press "Add line" to add it to the work layer.  
+
 
 tracker=https://github.com/sickel/localdigitizer/issues
 repository=https://github.com/sickel/localdigitizer
@@ -20,7 +21,7 @@ repository=https://github.com/sickel/localdigitizer
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-# changelog=
+changelog=Fixed error when using negative values in coordinates. Button to swap to and from coordinates. Calculated to-coordinates when using angle and lengtht are shown in to XY after the line is added.
 
 # Tags are comma separated with spaces allowed
 tags=Vector digitizer
@@ -29,7 +30,7 @@ homepage=https://github.com/sickel/localdigitizer
 category=Vector
 icon=icon.png
 # experimental flag
-experimental=True
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
